@@ -23,6 +23,13 @@ st.subheader(f'選択銘柄: {selected_stock}')
 @st.cache_data
 def load_data(ticker):
     data = yf.download(ticker, start="2020-01-01", end=date.today().strftime("%Y-%m-%d"))
+    
+    # ▼▼▼ 修正ポイント：多重インデックス（2階建ての列名）を平らにする ▼▼▼
+    # 列名が複雑な形式(MultiIndex)の場合、1段目(Closeなど)だけを取り出す
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
+    # ▲▲▲ 修正ここまで ▲▲▲
+
     data.reset_index(inplace=True)
     return data
 
